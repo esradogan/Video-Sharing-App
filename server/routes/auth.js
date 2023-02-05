@@ -6,11 +6,10 @@ const router = express.Router();
 //create a user
 router.post("/signup", signUp )
 
-
 //sign in
 router.post("/signin", signIn)
 
-// google auth
+//google auth
 
 router.post("/google", )
 
