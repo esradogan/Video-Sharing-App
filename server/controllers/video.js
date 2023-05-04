@@ -1,5 +1,6 @@
-import { createError } from "../error"
-import Video from "../models/Video"
+import { createError } from "../error.js"
+import User from "../models/User.js"
+import Video from "../models/Video.js"
 
 
 export const getVideo = async (req, res, next) => {
@@ -64,3 +65,58 @@ export const deleteVideo = async (req, res, next) => {
         createError("400", "Video not deleted succesfully!")
     }
 }
+
+
+export const addView = async (req, res, next) => {
+    try {
+        const videoView = await Video.findByIdAndUpdate(req.params.id, {
+            $inc: { views: 1 }
+        })
+        res.status(200).json(videoView)
+
+    } catch (error) {
+        next(error)
+
+    }
+}
+
+export const getTrendVideos = async (req, res, next) => {
+    try {
+        const videos = await Video.find.sort({ views: -1 }) // -1 getting most viewed videos
+        res.status(200).json(videos)
+
+    } catch (error) {
+        createError("400", "Video not found!")
+    }
+}
+
+export const getRandomVideos = async (req, res, next) => {
+    try {
+        const videos = await Video.aggregate([{ $sample: { size: 40 } }])
+        res.status(200).json(videos)
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const subscribe = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id)
+        const subscribedChannels = user.subscribedUsers
+
+        const list = Promise.all(
+            subscribedChannels.map((channelId) => {
+                return Video.find({ userId: channelId })
+            })
+        )
+
+        res.status(200).json(list)
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
