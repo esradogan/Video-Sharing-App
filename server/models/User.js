@@ -21,11 +21,11 @@ const UserSchema = new mongoose.Schema({
     subscribers: {
         type: Number,
         default: 0
-    },
+    }, // kendisine abone olan sayısı
     subscribedUsers: {
         type: [String],
         default: 0
-    },
+    }, // kendisinin abone oldukları
 
 
 }, { timestamps: true })
