@@ -1,5 +1,6 @@
 import { createError } from "../error.js"
 import User from "../models/User.js"
+import Video from "../models/Video.js"
 
 export const updateUser = async (req, res, next) => {
     if (req.params.id == req.user.id) {
@@ -31,18 +32,14 @@ export const deleteUser = async (req, res, next) => {
     }
 }
 export const getUser = async (req, res, next) => {
-    if (req.params.id == req.user.id) {
-        try {
-            const user = await User.findById(req.params.id)
-            res.status(200).json(user)
-        } catch (error) {
-            next(error)
-        }
-    }
-    else {
-        return next(createError(403, "You can delete only your account!"))
+    try {
+        const user = await User.findById(req.params.id)
+        res.status(200).json(user)
+    } catch (error) {
+        next(error)
     }
 }
+
 export const subscribe = async (req, res, next) => {
     try {
         await User.findByIdAndUpdate(req.user.id, {
@@ -70,8 +67,32 @@ export const unsubscribe = async (req, res, next) => {
         next(error)
     }
 }
-export const like = (req, res, next) => {
+
+export const like = async (req, res, next) => {
+    const id = req.user.id;
+    const videoId = req.params.videoId;
+    try {
+        await Video.findByIdAndUpdate(videoId, {
+            $addToSet: { likes: id }, // id added array only once, push doesnt make it, adds again to array 
+            $pull: { dislikes: id }
+        });
+        res.status(200).json("The video liked successfully!")
+    } catch (error) {
+        next(error)
+    }
 }
-export const dislike = (req, res, next) => {
+
+export const dislike = async (req, res, next) => {
+    const id = req.user.id;
+    const videoId = req.params.videoId;
+    try {
+        await Video.findByIdAndUpdate(videoId, {
+            $addToSet: { dislikes: id }, // id added array only once, push doesnt make it, adds again to array 
+            $pull: { likes: id }
+        });
+        res.status(200).json("The video disliked successfully!")
+    } catch (error) {
+        next(error)
+    }
 }
 

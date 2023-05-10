@@ -83,7 +83,8 @@ export const addView = async (req, res, next) => {
 
 export const getTrendVideos = async (req, res, next) => {
     try {
-        const videos = await Video.find.sort({ views: -1 }) // -1 getting most viewed videos
+          const videos  = await Video.find.sort({ views: -1 }) // -1 getting most viewed videos
+        console.log("Videos",videos)
         res.status(200).json(videos)
 
     } catch (error) {
@@ -93,7 +94,7 @@ export const getTrendVideos = async (req, res, next) => {
 
 export const getRandomVideos = async (req, res, next) => {
     try {
-        const videos = await Video.aggregate([{ $sample: { size: 1 } }])
+        const videos = await Video.aggregate([{ $sample: { size: 2 } }])
         res.status(200).json(videos)
 
     } catch (error) {
